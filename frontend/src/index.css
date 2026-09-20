@@ -26,3 +26,84 @@
 .challenge-list{display:grid;gap:18px;margin-top:22px}.challenge-list .challenge{padding-bottom:18px;border-bottom:1px solid var(--line)}.challenge-list .challenge:last-child{border-bottom:0}
 @media(max-width:600px){.flashcards{grid-template-columns:1fr}.flashcard{min-height:200px}}
 
+/* Shared responsive layout overrides */
+@media (max-width: 900px) {
+	.topbar { padding-inline: 32px; }
+	.page { padding-inline: 32px; }
+	.hero-card { gap: 24px; }
+	.workspace-layout { padding-right: 0; }
+	.roadmap-output, .report, .learning-output { min-width: 0; }
+	.chat-window, .chat-input { min-width: 0; }
+}
+
+@media (max-width: 640px) {
+	.app-shell { display: block; }
+	.sidebar { width: 100%; height: 64px; padding: 8px 12px; inset: 0 0 auto; z-index: 20; flex-direction: row; align-items: center; gap: 8px; overflow-x: auto; }
+	.brand { flex: 0 0 auto; padding: 0 8px; font-size: 16px; }
+	.brand-mark { width: 30px; height: 30px; }
+	.sidebar nav { display: flex; gap: 4px; flex: 1 0 auto; }
+	.nav-caption, .resume-status { display: none; }
+	.nav-link, .nav-link:not(.active)::after { width: 42px; height: 42px; margin: 0; padding: 0; font-size: 0; justify-content: center; flex: 0 0 42px; }
+	.nav-link i { font-size: 19px; }
+	.main { width: 100%; margin-left: 0; padding-top: 64px; }
+	.topbar { height: auto; min-height: 82px; padding: 18px 20px; }
+	.topbar h1 { font-size: 21px; }
+	.topbar .eyebrow { font-size: 9px; }
+	.page { padding: 28px 18px 52px; }
+	.page-intro { margin-bottom: 22px; }
+	.page-intro h2, .hero-card h2 { font-size: clamp(28px, 8vw, 36px); overflow-wrap: anywhere; }
+	.hero-card { display: block; padding: 28px 22px; border-radius: 16px; }
+	.hero-card p, .page-intro p { font-size: 15px; }
+	.hero-orbit { display: none; }
+	.section-heading { padding: 30px 0 16px; }
+	.tool-card { padding: 18px; }
+	.quick-card { display: block; padding: 20px; }
+	.quick-card .badges { margin: 16px 0; }
+	.form-card { padding: 18px; }
+	.form-card textarea { min-height: 160px; }
+	.dropzone { min-height: 240px; padding: 24px 16px; }
+	.result-banner { align-items: flex-start !important; flex-wrap: wrap; }
+	.result-banner .mini-button { margin-left: 0; width: 100%; }
+	.report, .learning-output { padding: 18px; }
+	.report { display: block; }
+	.report-heading-actions, .report-actions { align-items: stretch; }
+	.report-actions > .mini-button, .report-heading-actions > .mini-button { margin: 0; flex: 1 1 100%; text-align: center; justify-content: center; }
+	.score { margin: 8px 0 22px; }
+	.score > div { width: 112px; height: 112px; }
+	.score b { font-size: 32px; }
+	.learning-controls { grid-template-columns: 1fr; padding: 16px; }
+	.learning-controls .button { width: 100%; justify-content: center; }
+	.learning-output header { display: block; }
+	.learning-output header > div:last-child { margin-top: 12px; }
+	.learning-output header .mini-button { margin: 0 6px 0 0; }
+	.chat-window { min-height: 330px; padding: 16px; }
+	.message { max-width: 94%; padding: 11px 12px; }
+	.chat-input { display: flex; padding: 9px; }
+	.chat-input input { min-width: 0; width: 100%; }
+	.chat-input .button { flex: 0 0 auto; padding-inline: 13px; }
+	.history-report { padding: 16px; }
+	.history-report-top { align-items: stretch; flex-direction: column; gap: 10px; }
+	.history-report-top .mini-button { align-self: flex-start; margin: 0; }
+	.workspace-layout { display: block; }
+	.history-sidebar { margin: 0 18px 20px; }
+	.roadmap-output { padding: 18px; }
+	.roadmap-summary-heading { align-items: flex-start; flex-direction: column; gap: 5px; }
+	.roadmap-match-summary { padding: 15px; }
+	.match-summary-table { min-width: 560px; }
+	.roadmap-table { min-width: 520px; }
+	.resume-head { gap: 12px; flex-direction: column; }
+	.resume-body { padding-inline: 18px; }
+	.empty-state { margin: 70px auto; padding: 0 18px; }
+}
+
+@media (max-width: 380px) {
+	.brand > span:last-child { display: none; }
+	.sidebar { padding-inline: 8px; }
+	.nav-link, .nav-link:not(.active)::after { width: 38px; flex-basis: 38px; }
+	.nav-link i { font-size: 17px; }
+	.page { padding-inline: 14px; }
+	.topbar { padding-inline: 14px; }
+	.button { width: 100%; justify-content: center; }
+	.mini-button { max-width: 100%; white-space: normal; }
+}
+
