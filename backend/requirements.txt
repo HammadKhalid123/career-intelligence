@@ -4,8 +4,12 @@ pydantic
 pydantic-settings
 sqlalchemy
 asyncpg
+alembic
 python-dotenv
 python-multipart
 pypdf
 httpx
 langchain-groq
+langchain-text-splitters
+langgraph
+langchain-community

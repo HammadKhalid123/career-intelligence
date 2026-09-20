@@ -130,6 +130,21 @@ function RoadmapContent() {
    Converts structured markdown blocks into styled sections.
 ------------------------------------------------------------------- */
 function RoadmapRenderer({ text }) {
+  const matchSummary = extractMatchSummary(text);
+  if (matchSummary) {
+    return (
+      <div className="roadmap-structured">
+        {matchSummary.before && <RoadmapBlocks text={matchSummary.before} />}
+        <MatchSummary summary={matchSummary} />
+        {matchSummary.after && <RoadmapBlocks text={matchSummary.after} />}
+      </div>
+    );
+  }
+
+  return <RoadmapBlocks text={text} />;
+}
+
+function RoadmapBlocks({ text }) {
   const blocks = parseMarkdownBlocks(text);
 
   return (
@@ -195,6 +210,73 @@ function RoadmapRenderer({ text }) {
         }
       })}
     </div>
+  );
+}
+
+function extractMatchSummary(text) {
+  const startMatch = text.match(/Match Summary\s*(?:\(([^)]+)\))?/i);
+  if (!startMatch) return null;
+
+  const start = startMatch.index;
+  const missingMatch = text.slice(start).match(/What you[’']re missing\s*:/i);
+  const end = missingMatch ? start + missingMatch.index : text.length;
+  const summaryText = text.slice(start, end);
+  const headerMatch = summaryText.match(/Requirement\s*\|\s*Status\s*\|\s*Evidence\s*\|?/i);
+  if (!headerMatch) return null;
+
+  const cells = summaryText
+    .slice(headerMatch.index + headerMatch[0].length)
+    .split("|")
+    .map((cell) => cell.trim())
+    .filter((cell) => cell && !/^[-:]+$/.test(cell));
+  const rows = [];
+  for (let index = 0; index + 2 < cells.length; index += 3) {
+    rows.push({ requirement: cells[index], status: cells[index + 1], evidence: cells[index + 2] });
+  }
+
+  const after = missingMatch
+    ? text.slice(end).replace(/What you[’']re missing\s*:/i, "What you're missing:").replace(/^\s*[-_]+\s*/m, "").trim()
+    : "";
+  return {
+    before: text.slice(0, start).trim(),
+    score: startMatch[1] || "",
+    rows,
+    after,
+  };
+}
+
+function MatchSummary({ summary }) {
+  const missingParts = summary.after.split(/\n+/).map((item) => item.replace(/^[-*•]\s*/, "").trim()).filter(Boolean);
+  return (
+    <section className="roadmap-match-summary">
+      <div className="roadmap-summary-heading">
+        <div>
+          <span className="eyebrow">MATCH SUMMARY</span>
+          <h3>{summary.score || "ATS score"}</h3>
+        </div>
+        <span className="summary-count">{summary.rows.length} requirements</span>
+      </div>
+      <div className="match-summary-table-wrap">
+        <table className="match-summary-table">
+          <thead><tr><th>Requirement</th><th>Status</th><th>Evidence</th></tr></thead>
+          <tbody>
+            {summary.rows.map((row, index) => (
+              <tr key={`${row.requirement}-${index}`}>
+                <td><strong>{renderInline(row.requirement)}</strong></td>
+                <td><span className={`match-status ${row.status.includes("❌") ? "missing" : "matched"}`}>{renderInline(row.status)}</span></td>
+                <td>{renderInline(row.evidence)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {missingParts.length > 0 && (
+        <div className="roadmap-missing">
+          <h4>What you’re missing</h4>
+          <ul>{missingParts.map((item, index) => <li key={index}>{renderInline(item)}</li>)}</ul>
+        </div>
+      )}
+    </section>
   );
 }
 
