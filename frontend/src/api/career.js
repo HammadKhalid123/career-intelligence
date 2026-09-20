@@ -1,0 +1,13 @@
+import client from "./client";
+export const analyzeJob = async (resume_id, job_description) => (await client.post("/api/v1/jobs/analyze", { resume_id, job_description })).data;
+export const getRoadmap = async (resume_id, job_description) => (await client.post("/api/v1/agent/roadmap", { resume_id, job_description })).data;
+export const sendMessage = async (resume_id, question) => (await client.post("/api/v1/chat", { resume_id, question })).data;
+export const getLearning = async (type, skill, resumeId, count = 6) => (await client.get(`/api/v1/learning/${type}`, { params: { skill, resume_id: resumeId, count } })).data;
+export const getResources = async (skill) => (await client.get("/api/v1/learning/resources", { params: { skill } })).data;
+export const getProgress = async (resumeId) => (await client.get(`/api/v1/learning/progress/${resumeId}`)).data;
+export const updateProgress = async (resume_id, skill, status) => (await client.post("/api/v1/learning/progress", { resume_id, skill, status })).data;
+export const getLatestMatch = async (resumeId) => (await client.get(`/api/v1/jobs/latest/${resumeId}`)).data;
+export const getMatchHistory = async (resumeId) => (await client.get(`/api/v1/jobs/history/${resumeId}`)).data;
+export const getSavedRoadmap = async (resumeId) => (await client.get(`/api/v1/agent/roadmap/${resumeId}`)).data;
+export const getRoadmapHistory = async (resumeId) => (await client.get(`/api/v1/agent/roadmap-history/${resumeId}`)).data;
+export const getSavedLearning = async (resumeId) => (await client.get(`/api/v1/learning/saved/${resumeId}`)).data;

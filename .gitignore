@@ -1,0 +1,83 @@
+# ===========================
+# Environment / Secrets
+# ===========================
+.env
+.env.*
+!.env.example
+
+# ===========================
+# Python
+# ===========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ===========================
+# Virtual Environment
+# ===========================
+venv/
+.venv/
+env/
+ENV/
+pyvenv.cfg
+
+# ===========================
+# Database (SQLite)
+# ===========================
+*.db
+*.sqlite
+*.sqlite3
+career_ai.db
+
+# ===========================
+# ChromaDB / Vector Store
+# ===========================
+chroma_store/
+chroma/
+chroma_db/
+.chroma/
+*.chroma
+vectorstore/chroma_store/
+
+# ===========================
+# Uploads
+# ===========================
+uploads/
+uploaded_files/
+backend/app/uploads/
+
+# ===========================
+# Generated / Temp
+# ===========================
+output/
+outputs/
+temp/
+tmp/
+
+# ===========================
+# Logs
+# ===========================
+*.log
+
+# ===========================
+# IDE / Editor
+# ===========================
+.vscode/
+.idea/
+*.swp
+
+# ===========================
+# OS Files
+# ===========================
+.DS_Store
+Thumbs.db
+
+# ===========================
+# Node / Frontend
+# ===========================
+node_modules/
+dist/
+build/
+.cache/
+.npm/

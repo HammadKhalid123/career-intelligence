@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+sqlalchemy
+asyncpg
+python-dotenv
+python-multipart
+pypdf
+httpx
+langchain-groq
