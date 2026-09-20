@@ -21,16 +21,24 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# ✅ FIXED CORS CONFIGURATION
 allowed_origins = [
     origin.strip()
     for origin in settings.CORS_ORIGINS.split(",")
     if origin.strip()
 ]
-if not allowed_origins:
-    allowed_origins = [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ]
+
+# Vercel URL aur localhost hamesha allow karein
+required_origins = [
+    "https://career-intelligence-five-zeta.vercel.app",
+    "https://career-intelligence.vercel.app",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+for origin in required_origins:
+    if origin not in allowed_origins:
+        allowed_origins.append(origin)
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,6 +46,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 app.include_router(resume.router)
