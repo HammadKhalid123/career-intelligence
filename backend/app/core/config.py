@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "CareerCopilot AI"
     ENVIRONMENT: str = "development"
     DEBUG: bool = False
-    CORS_ORIGINS: str = ""
+    CORS_ORIGINS: str = "https://career-intelligence-five-zeta.vercel.app"
 
     DATABASE_URL: str = "postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require"
     DATABASE_URL_DIRECT: str = ""
