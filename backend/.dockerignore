@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+.env
+uploads/
+chroma_store/
+.pytest_cache/
+.mypy_cache/
+.venv/
+.git/
