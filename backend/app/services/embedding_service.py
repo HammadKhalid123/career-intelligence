@@ -1,48 +1,35 @@
-from typing import Any
+import hashlib
+import math
+import re
 
-import httpx
+EMBEDDING_DIMENSION = 384
+TOKEN_PATTERN = re.compile(r"[a-z0-9]+")
 
-from core.config import settings
 
+class LocalHashEmbeddings:
+    def _embed_one(self, text: str) -> list[float]:
+        vector = [0.0] * EMBEDDING_DIMENSION
+        for token in TOKEN_PATTERN.findall(text.lower()):
+            digest = hashlib.blake2b(token.encode(), digest_size=8).digest()
+            index = int.from_bytes(digest[:4], "little") % EMBEDDING_DIMENSION
+            sign = 1.0 if digest[4] % 2 else -1.0
+            vector[index] += sign
 
-class HuggingFaceInferenceEmbeddings:
-    def __init__(self, model_name: str, token: str):
-        self.endpoint = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{model_name}"
-        self.headers = {"Authorization": f"Bearer {token}"} if token else {}
-
-    def _embed(self, texts: list[str]) -> list[list[float]]:
-        response = httpx.post(
-            self.endpoint,
-            headers=self.headers,
-            json={"inputs": texts, "options": {"wait_for_model": True}},
-            timeout=120,
-        )
-        response.raise_for_status()
-        embeddings: Any = response.json()
-        if embeddings and isinstance(embeddings[0], list) and isinstance(embeddings[0][0], list):
-            embeddings = [
-                [sum(values) / len(values) for values in zip(*text_embedding)]
-                for text_embedding in embeddings
-            ]
-        elif embeddings and isinstance(embeddings[0], (int, float)):
-            embeddings = [embeddings]
-        return embeddings
+        norm = math.sqrt(sum(value * value for value in vector))
+        return [value / norm for value in vector] if norm else vector
 
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
-        return self._embed(texts)
+        return [self._embed_one(text) for text in texts]
 
     def embed_query(self, text: str) -> list[float]:
-        return self._embed([text])[0]
+        return self._embed_one(text)
 
 
-_embedding_function: HuggingFaceInferenceEmbeddings | None = None
+_embedding_function: LocalHashEmbeddings | None = None
 
 
-def get_embedding_function() -> HuggingFaceInferenceEmbeddings:
+def get_embedding_function() -> LocalHashEmbeddings:
     global _embedding_function
     if _embedding_function is None:
-        _embedding_function = HuggingFaceInferenceEmbeddings(
-            model_name=settings.EMBEDDING_MODEL,
-            token=settings.HF_TOKEN,
-        )
+        _embedding_function = LocalHashEmbeddings()
     return _embedding_function
