@@ -18,7 +18,6 @@ dependencies = [
 	"langchain-text-splitters",
 	"langgraph",
 	"langchain-community",
-	"sentence-transformers",
 ]
 
 [tool.setuptools.packages.find]

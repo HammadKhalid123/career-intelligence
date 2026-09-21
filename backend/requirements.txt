@@ -13,4 +13,3 @@ langchain-groq
 langchain-text-splitters
 langgraph
 langchain-community
-sentence-transformers
