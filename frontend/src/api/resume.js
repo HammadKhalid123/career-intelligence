@@ -9,7 +9,7 @@ export async function uploadResume(file) {
   formData.append("file", file);
 
   const response = await client.post("/api/v1/resume/upload", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
+    headers: { Accept: "application/json" },
   });
 
   return response.data;

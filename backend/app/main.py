@@ -23,7 +23,7 @@ app = FastAPI(
 
 # ✅ FIXED CORS CONFIGURATION
 allowed_origins = [
-    origin.strip()
+    origin.strip().rstrip("/")
     for origin in settings.CORS_ORIGINS.split(",")
     if origin.strip()
 ]
@@ -48,6 +48,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],
+    max_age=86400,
 )
 
 app.include_router(resume.router)
