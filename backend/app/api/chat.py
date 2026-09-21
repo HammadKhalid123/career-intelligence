@@ -5,7 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.database import get_db
 from db.models import Resume
 from models.schemas import ChatRequest, ChatResponse, SourceChunk
-from services.llm_service import LLMServiceError, call_chat_completion
+from services.llm_service import (
+    LLMServiceError,
+    call_chat_completion,
+    call_general_completion,
+)
 from services.rag_service import build_context, retrieve_relevant_chunks
 
 router = APIRouter(prefix="/api/v1/chat", tags=["chat"])
@@ -21,16 +25,13 @@ async def chat(request: ChatRequest, db: AsyncSession = Depends(get_db)):
 
     chunks = retrieve_relevant_chunks(request.resume_id, request.question)
 
-    if not chunks:
-        raise HTTPException(
-            status_code=422,
-            detail="No indexed data found for this resume. Call /index first.",
-        )
-
-    context = build_context(chunks)
-
     try:
-        answer = await call_chat_completion(request.question, context)
+        if chunks:
+            answer = await call_chat_completion(
+                request.question, build_context(chunks)
+            )
+        else:
+            answer = await call_general_completion(request.question)
     except LLMServiceError as e:
         raise HTTPException(status_code=502, detail=str(e))
 

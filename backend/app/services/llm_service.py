@@ -115,15 +115,26 @@ async def _call_groq(
 
 RAG_ANSWER_SYSTEM_PROMPT = (
     "You are a career assistant answering questions about a candidate's resume. "
-    "Only use the information in the provided context. "
-    "If the answer is not present in the context, say you don't have enough "
-    "information to answer that."
+    "Use the provided resume context for resume-specific questions. For general "
+    "questions, answer helpfully using your general knowledge. Do not invent "
+    "facts about the candidate that are not present in the context."
+)
+
+GENERAL_ANSWER_SYSTEM_PROMPT = (
+    "You are CareerCopilot, a helpful and friendly career assistant. Answer the "
+    "user's general questions naturally, including greetings and casual conversation. "
+    "Be concise, clear, and useful. If the user asks about their resume, explain "
+    "that they need to index a resume before you can give resume-specific details."
 )
 
 
 async def call_chat_completion(question: str, context: str) -> str:
     user_prompt = f"Context:\n{context}\n\nQuestion: {question}"
     return await _call_groq(user_prompt, system_instruction=RAG_ANSWER_SYSTEM_PROMPT)
+
+
+async def call_general_completion(question: str) -> str:
+    return await _call_groq(question, system_instruction=GENERAL_ANSWER_SYSTEM_PROMPT)
 
 
 async def extract_resume_data(resume_text: str) -> dict:
