@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import agent, chat, jobs, learning, resume
+from api import agent, chat, gmail, jobs, learning, resume
 from core.config import settings
 from db.database import init_db
 
@@ -56,6 +56,7 @@ app.include_router(chat.router)
 app.include_router(jobs.router)
 app.include_router(agent.router)
 app.include_router(learning.router)
+app.include_router(gmail.router)
 
 
 @app.get("/")

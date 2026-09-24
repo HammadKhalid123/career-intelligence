@@ -29,6 +29,22 @@ class LearningProgress(Base):
     )
 
 
+class GmailConnection(Base):
+    __tablename__ = "gmail_connections"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    resume_id: Mapped[int] = mapped_column(Integer, nullable=False, unique=True, index=True)
+    gmail_email: Mapped[str] = mapped_column(String(255), nullable=False)
+    access_token: Mapped[str] = mapped_column(Text, nullable=False)
+    refresh_token: Mapped[str] = mapped_column(Text, nullable=False)
+    token_type: Mapped[str] = mapped_column(String(50), default="Bearer")
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
+
+
 class JobMatch(Base):
     __tablename__ = "job_matches"
 

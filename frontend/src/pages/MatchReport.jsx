@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
-import { analyzeJob, getLatestMatch } from "../api/career";
+import {
+  analyzeJob,
+  connectGmail,
+  draftGmailEmail,
+  disconnectGmail,
+  getGmailStatus,
+  getLatestMatch,
+  sendGmailEmail,
+} from "../api/career";
 import ResumeGate from "../components/ResumeGate";
 import { useResume } from "../hooks/useResume";
 import { exportToPdf } from "../utils/pdfExport";
@@ -21,6 +29,23 @@ function Match() {
   const [result, setResult] = useState(() => task.result || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(() => task.error?.message || "");
+  const [gmailStatus, setGmailStatus] = useState({ connected: false, gmail_email: null });
+  const [gmailDraft, setGmailDraft] = useState(null);
+  const [gmailBusy, setGmailBusy] = useState(false);
+  const [gmailMessage, setGmailMessage] = useState("");
+
+  useEffect(() => {
+    if (!resume?.id) return;
+    let dead = false;
+    getGmailStatus(resume.id)
+      .then((data) => {
+        if (!dead) setGmailStatus(data);
+      })
+      .catch(() => {});
+    return () => {
+      dead = true;
+    };
+  }, [resume?.id]);
 
   useEffect(() => {
     if (!resume?.id) return;
@@ -65,6 +90,73 @@ function Match() {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleConnectGmail = async () => {
+    if (!resume?.id) return;
+    setGmailBusy(true);
+    setGmailMessage("");
+    try {
+      const data = await connectGmail(resume.id);
+      const authWindow = window.open(data.auth_url, "gmailAuth", "width=500,height=700");
+      if (!authWindow) {
+        throw new Error("Popup was blocked. Please allow popups and try again.");
+      }
+      setGmailMessage("Google sign-in opened. Complete the flow and come back here.");
+    } catch (err) {
+      setGmailMessage(err.message || "Unable to start Gmail connect flow.");
+    } finally {
+      setGmailBusy(false);
+    }
+  };
+
+  const handleDisconnectGmail = async () => {
+    if (!resume?.id) return;
+    setGmailBusy(true);
+    try {
+      await disconnectGmail(resume.id);
+      setGmailStatus({ connected: false, gmail_email: null });
+      setGmailDraft(null);
+      setGmailMessage("Gmail disconnected successfully.");
+    } catch (err) {
+      setGmailMessage(err.message || "Unable to disconnect Gmail.");
+    } finally {
+      setGmailBusy(false);
+    }
+  };
+
+  const handleDraftEmail = async () => {
+    if (!resume?.id || !description.trim()) return;
+    setGmailBusy(true);
+    setGmailMessage("");
+    try {
+      const draft = await draftGmailEmail(resume.id, description, "Write a polished follow-up email to the recruiter about this role and my fit.");
+      setGmailDraft(draft);
+      setGmailMessage("Email draft generated successfully.");
+    } catch (err) {
+      setGmailMessage(err.message || "Unable to draft email.");
+    } finally {
+      setGmailBusy(false);
+    }
+  };
+
+  const handleSendEmail = async () => {
+    if (!resume?.id || !gmailDraft) return;
+    setGmailBusy(true);
+    setGmailMessage("");
+    try {
+      const response = await sendGmailEmail({
+        resume_id: resume.id,
+        to: gmailDraft.to,
+        subject: gmailDraft.subject,
+        body: gmailDraft.body,
+      });
+      setGmailMessage(`Email sent successfully to ${response.gmail_email}.`);
+    } catch (err) {
+      setGmailMessage(err.message || "Email could not be sent.");
+    } finally {
+      setGmailBusy(false);
     }
   };
 
@@ -158,6 +250,59 @@ function Match() {
         </button>
         {error && <p className="form-error">{error}</p>}
       </form>
+
+      <div className="form-card" style={{ marginTop: "24px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+          <div>
+            <div className="eyebrow" style={{ margin: 0 }}>GMAIL AI ACTION</div>
+            <h3 style={{ margin: "8px 0 0" }}>Connect Gmail and send a recruiter email</h3>
+          </div>
+          {gmailStatus.connected ? (
+            <button type="button" className="mini-button clear-section-button" onClick={handleDisconnectGmail} disabled={gmailBusy}>
+              Disconnect Gmail
+            </button>
+          ) : (
+            <button type="button" className="mini-button" onClick={handleConnectGmail} disabled={gmailBusy}>
+              Connect Gmail
+            </button>
+          )}
+        </div>
+
+        {gmailStatus.connected && (
+          <div style={{ marginTop: "18px", display: "grid", gap: "12px" }}>
+            <div className="badge" style={{ width: "fit-content" }}>Connected: {gmailStatus.gmail_email}</div>
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              <button type="button" className="button" onClick={handleDraftEmail} disabled={gmailBusy || !description.trim()}>
+                Generate AI email draft
+              </button>
+              {gmailDraft && (
+                <button type="button" className="mini-button" onClick={handleSendEmail} disabled={gmailBusy}>
+                  Send email now
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {gmailDraft && (
+          <div style={{ marginTop: "18px", display: "grid", gap: "10px" }}>
+            <label>
+              To
+              <input value={gmailDraft.to} readOnly style={{ width: "100%" }} />
+            </label>
+            <label>
+              Subject
+              <input value={gmailDraft.subject} readOnly style={{ width: "100%" }} />
+            </label>
+            <label>
+              Email body
+              <textarea value={gmailDraft.body} rows="10" readOnly style={{ width: "100%" }} />
+            </label>
+          </div>
+        )}
+
+        {gmailMessage && <p className="form-success" style={{ marginTop: "12px" }}>{gmailMessage}</p>}
+      </div>
 
       {result && (
         <section className="report">

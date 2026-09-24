@@ -11,3 +11,8 @@ export const getMatchHistory = async (resumeId) => (await client.get(`/api/v1/jo
 export const getSavedRoadmap = async (resumeId) => (await client.get(`/api/v1/agent/roadmap/${resumeId}`)).data;
 export const getRoadmapHistory = async (resumeId) => (await client.get(`/api/v1/agent/roadmap-history/${resumeId}`)).data;
 export const getSavedLearning = async (resumeId) => (await client.get(`/api/v1/learning/saved/${resumeId}`)).data;
+export const connectGmail = async (resumeId) => (await client.get(`/api/v1/gmail/connect`, { params: { resume_id: resumeId } })).data;
+export const getGmailStatus = async (resumeId) => (await client.get(`/api/v1/gmail/status/${resumeId}`)).data;
+export const disconnectGmail = async (resumeId) => (await client.post(`/api/v1/gmail/disconnect`, { resume_id: resumeId })).data;
+export const draftGmailEmail = async (resumeId, jobDescription, userPrompt) => (await client.post(`/api/v1/gmail/draft`, { resume_id: resumeId, job_description: jobDescription, user_prompt: userPrompt })).data;
+export const sendGmailEmail = async (payload) => (await client.post(`/api/v1/gmail/send`, payload)).data;

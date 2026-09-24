@@ -81,6 +81,47 @@ class JobDescriptionInput(BaseModel):
     job_description: str
 
 
+class GmailConnectResponse(BaseModel):
+    resume_id: int
+    auth_url: str
+
+
+class GmailStatusResponse(BaseModel):
+    connected: bool
+    resume_id: int
+    gmail_email: str | None = None
+    connected_at: datetime | None = None
+
+
+class GmailDraftRequest(BaseModel):
+    resume_id: int
+    job_description: str
+    user_prompt: str | None = None
+
+
+class GmailDraftResponse(BaseModel):
+    resume_id: int
+    to: str
+    subject: str
+    body: str
+
+
+class GmailSendRequest(BaseModel):
+    resume_id: int
+    to: str
+    subject: str
+    body: str
+
+
+class GmailSendResponse(BaseModel):
+    resume_id: int
+    gmail_email: str
+    to: str
+    subject: str
+    status: str
+    message_id: str | None = None
+
+
 class MatchResult(BaseModel):
     resume_id: int
     ats_score: float

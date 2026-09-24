@@ -32,6 +32,14 @@ class Settings(BaseSettings):
     GROQ_BASE_URL: str = "https://api.groq.com/openai/v1"
     LLM_MAX_RETRIES: int = 2
 
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REDIRECT_URI: str = "http://localhost:8000/api/v1/gmail/callback"
+    GOOGLE_SCOPES: list[str] = [
+        "https://www.googleapis.com/auth/gmail.send",
+        "https://www.googleapis.com/auth/userinfo.email",
+    ]
+
     HF_TOKEN: str = ""
     EMBEDDING_MODEL: str = "BAAI/bge-small-en-v1.5"
 
